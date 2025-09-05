@@ -278,9 +278,9 @@ async def download_and_send(update_or_query, context: ContextTypes.DEFAULT_TYPE,
             await reply_target.reply_text(f"Gagal: {msg[:400]}")
 
 # =====================
-# App bootstrap (Polling/Webhook)
+# App bootstrap (Polling)
 # =====================
-async def main():
+def main():
     app = ApplicationBuilder().token(BOT_TOKEN).concurrent_updates(True).build()
 
     app.add_handler(CommandHandler("start", start))
@@ -289,22 +289,8 @@ async def main():
     app.add_handler(CallbackQueryHandler(on_button))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
-    if USE_WEBHOOK:
-        if not WEBHOOK_URL:
-            raise SystemExit("USE_WEBHOOK=true tapi WEBHOOK_URL kosong")
-        await app.initialize()
-        await app.start()
-        await app.bot.set_webhook(WEBHOOK_URL, secret_token=WEBHOOK_SECRET)
-        await app.start_webhook(
-            listen=LISTEN_ADDR,
-            port=PORT,
-            secret_token=WEBHOOK_SECRET,
-            url_path=WEBHOOK_URL.split("/")[-1] if WEBHOOK_URL else None,
-        )
-        await asyncio.Event().wait()
-    else:
-        await app.run_polling(allowed_updates=Update.ALL_TYPES)
+    # Pakai polling saja (lebih simpel untuk Render Free)
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.get_event_loop().run_until_complete(main())
+    main()
