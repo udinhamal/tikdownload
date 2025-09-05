@@ -1,0 +1,10 @@
+# Jangan commit file environment
+.env
+
+# File python cache
+__pycache__/
+*.pyc
+
+# File sementara
+*.log
+*.tmp
